@@ -18,6 +18,9 @@ public class PitchMap {
 //Declare global instance
 PitchMap pitchMap;
 
+//Make scale lib
+// DEBUG: how to call from a static class
+
 // Initialize static values
-60 => pitchMap.root; // C4
-ScaleLibrary.getScale("dorian") @=> Shared.pitchMap.scale;
+ScaleLibrary.dorian => Shared.pitchMap.scale;
+60 => Shared.pitchMap.root;

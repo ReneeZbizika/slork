@@ -15,7 +15,7 @@ while(true)
     if(Shared.isPressed)
     {
         Shared.pitchX => float x;
-        pitchMap.quantize(x) => int midiNote;
+        Shared.pitchMap.quantize(x) => int midiNote;
         Std.mtof(midiNote) => osc.freq;
         0.3 => osc.gain;
     }

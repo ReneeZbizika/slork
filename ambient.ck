@@ -1,6 +1,8 @@
 // ambient.ck - All-in-one ambient synthscape triggered by trackpad press
 
 // Requires: Shared.isPressed set by input.ck
+//DEBUG ISSUE??
+//new PitchMap @=> Shared.pitchMap;
 
 //1 => Shared.isPressed;  // force on to test audio
 // <<< "ambient sees isPressed:", Shared.isPressed >>>;
@@ -24,9 +26,14 @@ fun void modernPad()
     0.2 => p2.pan;
     0.2 => rev1.mix => rev2.mix;
 
-    60 => int baseNote;
-    Std.mtof(baseNote) * 0.997 => s1.freq;
-    Std.mtof(baseNote) * 1.003 => s2.freq;
+    // Use pitchMap to get the root note
+    // We'll quantize(0.0) which effectively picks the first index (scale[0]) from the scale
+    int baseMidi;
+    // 60 => baseMidi; // Hard-coded note. 60 = middle C. DEBUG PURPOSES
+
+    Shared.pitchMap.quantize(0.0) => baseMidi; // root + scale[0]
+    Std.mtof(baseMidi) * 0.997 => s1.freq;
+    Std.mtof(baseMidi) * 1.003 => s2.freq;
 
     SinOsc lfo1 => blackhole;
     SinOsc lfo2 => blackhole;
