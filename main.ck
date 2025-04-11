@@ -4,5 +4,8 @@ Machine.add(me.dir() + "scales.ck");      // Make sure this comes before pitchma
 Machine.add(me.dir() + "pitchmap.ck");    // pitchMap can now access ScaleLibrary
 
 Machine.add(me.dir() + "synth.ck");
+
+1::second => now; // WAIT for state to settle
 //Machine.add(me.dir() + "pad.ck");
-Machine.add(me.dir() + "ambient.ck"); // ambient pad
+Machine.add(me.dir() + "modern_pad.ck");
+

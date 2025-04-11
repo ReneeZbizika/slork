@@ -3,7 +3,13 @@
 // Requires: Shared.isPressed set by input.ck
 
 //1 => Shared.isPressed;  // force on to test audio
-<<< "ambient sees isPressed:", Shared.isPressed >>>;
+// <<< "ambient sees isPressed:", Shared.isPressed >>>;
+/* 
+while (true) {
+    <<< "PAD sees pressed:", Shared.isPressed >>>;
+    1::second => now;
+}
+*/
 
 // --- Layer 1: Modern Pad ---
 fun void modernPad()
