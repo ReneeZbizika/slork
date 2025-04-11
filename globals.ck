@@ -3,13 +3,13 @@
 // PitchMap class
 public class PitchMap {
     static int root;
-    static int majorScale[];
+    static int scale[];
 
     // Quantize function
     fun int quantize(float x) {
-        (x * majorScale.size()) $ int => int index;
-        if(index >= majorScale.size()) index - 1 => index;
-        return root + majorScale[index];
+        (x * scale.size()) $ int => int index;
+        if(index >= scale.size()) index - 1 => index;
+        return root + scale[index];
     }
 }
 
