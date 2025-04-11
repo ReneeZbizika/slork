@@ -1,6 +1,8 @@
 // pitchmap.ck
 // Quantizes X to notes in a scale
+// assumes ScaleLibrary is already loaded
 
+// PitchMap class
 public class PitchMap {
     static int root;
     static int majorScale[];
@@ -18,4 +20,4 @@ PitchMap pitchMap;
 
 // Initialize static values
 60 => pitchMap.root; // C4
-[0, 2, 4, 5, 7, 9, 11] @=> pitchMap.majorScale;
+ScaleLibrary.getScale("dorian") @=> Shared.pitchMap.scale;
