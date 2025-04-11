@@ -20,3 +20,5 @@ public class Shared {
 }
 <<< "globals loaded!" >>>;
 
+ScaleLibrary.major @=> Shared.pitchMap.scale;
+
