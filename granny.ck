@@ -1,6 +1,12 @@
 @import "constants.ck";
 Constants c;
 
+@import "listen.ck";
+OSCListener listener;
+listener.init(9000);  // match the port set in iDraw OSC
+
+//spork ~ osc_control_loop(players[0]);
+
 // ======================== Granular Synthesis ========================
 class Granulator
 {
@@ -123,41 +129,55 @@ class Granulator
         }
     }
 
+    fun void mouse_listener() {
+        while (true) {
+            // Set grain playback position from X
+            Math.remap(x, 0, 800, 0.0, 1.0) => c.GRAIN_POSITION;
 
-    fun void mouse_listener()
-    {
-        1.0 => float distance_from_camera;
-        vec3 mousePos;
-        5.3 => float mouseRangeX;
-        3.3 => float mouseRangeY;
-        
-        while (true)
-        {
-            GG.nextFrame() => now;
-
-            if (GWindow.mouseLeftDown()) {
-                spork~this.unmute(100::ms);
-            }
-            else if (GWindow.mouseLeftUp())
-            {
-                spork~this.mute(300::ms);
-            }
-
-            GG.camera().screenCoordToWorldPos(GWindow.mousePos(), distance_from_camera) => mousePos;
-
-            Math.remap(mousePos.x, -mouseRangeX, mouseRangeY, 0.0, 1.0) => float p;
-            if (p > 0.95) 0.95 => p;
-            else if (p < 0) 0 => p;
-            p => c.GRAIN_POSITION;
-            
-            mousePos.y => float r;
-            if (r > 0)
-                Math.remap(r, 0, mouseRangeY, 1.0, 4.0) => grain_play_rate;
+            // Set playback rate from Y
+            if (y > 0)
+                Math.remap(y, 0, 800, 1.0, 4.0) => grain_play_rate;
             else
-                Math.remap(r, -mouseRangeY, 0, 0.0, 1.0) => grain_play_rate;
+                Math.remap(y, -800, 0, 0.0, 1.0) => grain_play_rate;
+
+            // Set volume from pressure
+            if (pressure > 0.05) {
+                spork ~ this.unmute(100::ms);
+                pressure * 0.7 => this.master_gain.gain;
+            } else {
+                spork ~ this.mute(300::ms);
+            }
+
+            50::ms => now; // loop every 50ms
         }
     }
 }
+
+// ======================== Control Loop ========================
+/* fun void osc_control_loop(SoundPlayer player) {
+    while (true) {
+        // Apply OSC-based control
+
+        // Map x (horizontal position) to grain position
+        Math.remap(x, 0, 800, 0.0, 1.0) => c.GRAIN_POSITION;
+
+        // Map y (vertical position) to playback rate
+        if (y > 0)
+            Math.remap(y, 0, 800, 1.0, 4.0) => player.gran.grain_play_rate;
+        else
+            Math.remap(y, -800, 0, 0.0, 1.0) => player.gran.grain_play_rate;
+
+        // Control gain/mute with pressure
+        if (pressure > 0.05) {
+            spork ~ player.gran.unmute(100::ms);
+            pressure * 0.7 => player.gran.master_gain.gain;
+        } else {
+            spork ~ player.gran.mute(300::ms);
+        }
+
+        50::ms => now;
+    }
+} */ 
 
 // ======================== Sound Player ========================
 

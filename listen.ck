@@ -1,73 +1,49 @@
-// Setup OSC receiver
-OscRecv recv;
-9000 => recv.port;
-recv.listen();
+public class OSCListener {
+    OscRecv recv;
+    OscEvent xEvent, yEvent, pressureEvent;
+    global float x, y, pressure;
 
-// Declare global variables to hold incoming values
-global float x, y, pressure;
+    // constructor
+    fun void init(int port) {
+        port => recv.port;
+        recv.listen();
 
+        recv.event("/x") @=> xEvent;
+        recv.event("/y") @=> yEvent;
+        recv.event("/pressure") @=> pressureEvent;
 
-// Audio: basic sine oscillator
-SinOsc s => dac;
-0.3 => s.gain;
+        spork ~ listenX();
+        spork ~ listenY();
+        spork ~ listenPressure();
+    }
 
+    fun void listenX() {
+        while (true) {
+            xEvent => now;
+            while (xEvent.nextMsg()) {
+                xEvent.getFloat() => x;
+                <<< "/x:", x >>>;
+            }
+        }
+    }
 
-recv.event("*") @=> OscEvent anythingEvent;
-spork ~ handleAny();
+    fun void listenY() {
+        while (true) {
+            yEvent => now;
+            while (yEvent.nextMsg()) {
+                yEvent.getFloat() => y;
+                <<< "/y:", y >>>;
+            }
+        }
+    }
 
-fun void handleAny() {
-    while (true) {
-        anythingEvent => now;
-        while (anythingEvent.nextMsg()) {
-            <<< "OSC RECEIVED (wildcard)" >>>;
+    fun void listenPressure() {
+        while (true) {
+            pressureEvent => now;
+            while (pressureEvent.nextMsg()) {
+                pressureEvent.getFloat() => pressure;
+                <<< "/pressure:", pressure >>>;
+            }
         }
     }
 }
-
-
-// Spork handlers for each OSC path
-recv.event("/x") @=> OscEvent xEvent;
-spork ~ handleX();
-
-recv.event("/y") @=> OscEvent yEvent;
-spork ~ handleY();
-
-recv.event("/pressure, f") @=> OscEvent pressureEvent;
-spork ~ handlePressure();
-
-fun void handleX() {
-    while (true) {
-        xEvent => now;
-        while (xEvent.nextMsg()) {
-            xEvent.getFloat() => x;
-	    <<<"Recieved x:", x >>>;
-            
-	// Map x to frequency (e.g., 200–800 Hz)
-            (x / 800.0) * 600 + 200 => s.freq;
-        }
-    }
-}
-
-fun void handleY() {
-    while (true) {
-        yEvent => now;
-        while (yEvent.nextMsg()) {
-            yEvent.getFloat() => y;
-            // You could use y for filter cutoff, panning, etc.
-        }
-    }
-}
-
-fun void handlePressure() {
-    while (true) {
-        pressureEvent => now;
-        while (pressureEvent.nextMsg()) {
-            pressureEvent.getFloat() => pressure;
-            // Map pressure to gain
-            pressure * 0.5 => s.gain;
-        }
-    }
-}
-
-// Keep the program running forever
-while (true) { 100::ms => now; }
