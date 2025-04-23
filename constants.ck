@@ -4,28 +4,47 @@ public class Constants
     1 => int KEYBOARD_DEVICE;
 
     // Audio files + keys
-    
-    ["boat_horn_0.wav", "seagull_0.wav"] @=> string GRANULAR_WAVS[];
-    ["boat_horn_0.wav", "seagull_0.wav"] @=> string NO_LOOP_WAVS[];
-    ["boat_horn_0.wav", "seagull_0.wav"] @=> string LOOP_WAVS[];
-    
+    8 => int NUM_GRANULATORS;
+    9 => int NUM_SOUNDS;
 
-    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] @=> string DRAWING_KEYS_STR[];
-    [30, 31, 32, 33, 34, 35, 36, 37, 38, 39] @=> int DRAWING_KEYS[];
+    [
+        "ocean_short.wav",      // 1
+        "crickets_0.wav",       // 2   maybe use night_background.wav
+        "wind_0.wav",           // 3
+        "seagull_0.wav",        // 4
+        "sparkle_2.wav",        // 5
+        "scary_0.wav",          // 6
+        "sail_0.wav",           // 7
+        "tropical_0.wav",       // 8
+    ] @=> string GRANULATOR_WAVS[];
+
+
+    [
+        "unknown.wav",             // 
+        "night_background.wav",    // W
+        "unknown.wav",             // 
+        "seagull_0.wav",           // R
+        "sparkle_2.wav",           // T
+        "scary_2.wav",             // Y
+        "sail_0.wav",              // U
+        "tropical_0.wav",          // I
+        "unknown.wav",             // 
+    ] @=> string SOUND_WAVS[];
+
+
+
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] @=> string GRANULATOR_KEYS_STR[];
+    [30, 31, 32, 33, 34, 35, 36, 37, 38, 39] @=> int GRANULATOR_KEYS[];
 
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"] @=> string SOUND_KEYS_STR[];
-    [20, 26, 8, 21, 23, 28, 24, 12, 18, 19] @=> int SOUND_KEYS_WHICH[];
+    [20, 26, 8, 21, 23, 28, 24, 12, 18, 19] @=> int SOUND_KEYS[];
 
-
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] @=> int SOUND_LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
-    WAVS.size() => int NUM_SOUNDS;
+    [0, 1, 0, 0, 0, 0, 0, 1, 0] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
     
     // Granular synthesis parameters
     1.0 => float MAIN_VOLUME;     // overall volume
 
-    [1000::ms, 1000::ms] @=> dur GRAIN_LENGTH[];    // grain duration base
-
-    // Turn these into arrays that map to each sound
+    [1000::ms, 1000::ms, 1000::ms, 1000::ms, 1000::ms, 1000::ms, 1000::ms, 1000::ms, 1000::ms, 1000::ms] @=> dur GRAIN_LENGTH[];    // grain duration base
 
     32 => float GRAIN_OVERLAP;      // how much overlap when firing
     0.5 => float GRAIN_RAMP_FACTOR;  // factor relating grain duration to ramp up/down time
