@@ -1,13 +1,8 @@
-@import "constants.ck";
-Constants c;
+@import "config.ck";
+Config c;
 
-@import "osc_listener.ck";
-OSCListener listener;
-listener.init(9000);  // match the port set in iDraw OSC
-
-// Webcam webcam(1);
-// webcam.texture();
-// <<< webcam.deviceName() >>>;
+@import "ipad.ck";
+iPad ipad --> GG.scene();
 
 // ======================== Granular Synthesis ========================
 class Granulator
@@ -188,16 +183,14 @@ class Granulator
         int we_are_currently_playing;
 
         while (true) {
-            // <<< "listener.x:", listener.x, "listener.y:", listener.y, "listener.pressure:", listener.pressure >>>;
-
             // Set grain playback position from X
-            Math.remap(listener.x, 0, 1360, 0.0, 1.0) => c.GRAIN_POSITION;
+            Math.remap(ipad.pencil.x, 0, 1360, 0.0, 1.0) => c.GRAIN_POSITION;
 
             // Set playback rate from Y
-            if (listener.y > 500)
-                Math.remap(listener.y, 1000, 500, -1.0, 2.0) => grain_play_rate;
+            if (ipad.pencil.y > 500)
+                Math.remap(ipad.pencil.y, 1000, 500, -1.0, 2.0) => grain_play_rate;
             else
-                Math.remap(listener.y, 500, 0, 2.0, 3.0) => grain_play_rate;
+                Math.remap(ipad.pencil.y, 500, 0, 2.0, 3.0) => grain_play_rate;
 
             // <<< "grain position:", c.GRAIN_POSITION >>>;
             // <<< "grain play rate:", grain_play_rate >>>;
@@ -205,7 +198,7 @@ class Granulator
             // Set volume from pressure
             // <<< "pressure:", listener.pressure >>>;
 
-            if (listener.pressure != prev_pressure) {
+            if (ipad.pencil.pressure != prev_pressure) {
                 0 => same_pressure_count;
 
                 if (!we_are_currently_playing) {
@@ -215,18 +208,18 @@ class Granulator
                 }
             }
             else same_pressure_count++;
-            // <<< "same pressure count:", same_pressure_count >>>;
 
-            if (same_pressure_count > 4 && we_are_currently_playing)
+
+            if (same_pressure_count > 4 && we_are_currently_playing)        // if the pencil pressure is the same for 4 consecutive frames, assume we lifted the pencil and mute the sound
             {
                 // <<< "pressure removed" >>>;
                 spork ~ this.mute(300::ms);
                 false => we_are_currently_playing;
             }
 
-            listener.pressure => prev_pressure;
+            ipad.pencil.pressure => prev_pressure;
             
-            50::ms => now; // loop every 10ms
+            GG.nextFrame() => now; // loop every 10ms
         }
     }
 

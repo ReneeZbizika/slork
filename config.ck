@@ -1,9 +1,25 @@
-public class Constants
+public class Config
 {
+    // ========================= Device configuration =========================
+
     // Device numbers
     1 => int KEYBOARD_DEVICE;
+    1 => int WEBCAM_DEVICE;
 
-    // Audio files + keys
+    // OSC port
+    9000 => int OSC_PORT;
+
+    // Window size
+    1280 => float WINDOW_WIDTH_CONSTANT;
+    960 => float WINDOW_HEIGHT_CONSTANT;
+    8.71 * 1.15 => float SLIDE_WIDTH;
+    4.9 * 1.15 => float SLIDE_HEIGHT;
+
+
+
+    // ========================= Audio configuration =========================
+
+    // Audio files
     8 => int NUM_GRANULATORS;
     9 => int NUM_SOUNDS;
 
@@ -32,15 +48,6 @@ public class Constants
     ] @=> string SOUND_WAVS[];
 
 
-
-    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] @=> string GRANULATOR_KEYS_STR[];
-    [30, 31, 32, 33, 34, 35, 36, 37, 38, 39] @=> int GRANULATOR_KEYS[];
-
-    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"] @=> string SOUND_KEYS_STR[];
-    [20, 26, 8, 21, 23, 28, 24, 12, 18, 19] @=> int SOUND_KEYS[];
-
-    [0, 1, 0, 0, 0, 0, 0, 1, 0] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
-    
     // Granular synthesis parameters
     1.0 => float MAIN_VOLUME;     // overall volume
 
@@ -57,4 +64,17 @@ public class Constants
     3.0 => float GRAIN_FIRE_RANDOM; // grain jitter (0 == periodic fire rate)
 
     30 => int LISA_MAX_VOICES;
+
+
+    // ========================= Keyboard configuration =========================
+
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] @=> string GRANULATOR_KEYS_STR[];
+    [30, 31, 32, 33, 34, 35, 36, 37, 38, 39] @=> int GRANULATOR_KEYS[];
+
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"] @=> string SOUND_KEYS_STR[];
+    [20, 26, 8, 21, 23, 28, 24, 12, 18, 19] @=> int SOUND_KEYS[];
+
+    [0, 1, 0, 0, 0, 0, 0, 1, 0] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
+    
+    
 }
