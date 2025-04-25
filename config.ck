@@ -20,8 +20,8 @@ public class Config
     // ========================= Audio configuration =========================
 
     // Audio files
-    8 => int NUM_GRANULATORS;
-    9 => int NUM_SOUNDS;
+    10 => int NUM_GRANULATORS;
+    15 => int NUM_SOUNDS;
 
     [
         "ocean_short.wav",      // 1
@@ -32,6 +32,8 @@ public class Config
         "scary_0.wav",          // 6
         "sail_0.wav",           // 7
         "tropical_0.wav",       // 8
+        "fish.wav",        // 9
+        "rain.wav",       // 0
     ] @=> string GRANULATOR_WAVS[];
 
 
@@ -44,6 +46,15 @@ public class Config
         "scary_2.wav",             // Y
         "sail_0.wav",              // U
         "tropical_0.wav",          // I
+        // new samples
+        "axe.wav",       // O
+        "hose.wav",       // P
+        "bomb.wav",       // A
+        "fish.wav",       // S
+        "fire.wav",       // D
+        "rain.wav",       // F
+        "scream.wav",       // G
+        "parachute.wav",       // H
         "unknown.wav",             // 
     ] @=> string SOUND_WAVS[];
 
@@ -71,10 +82,10 @@ public class Config
     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] @=> string GRANULATOR_KEYS_STR[];
     [30, 31, 32, 33, 34, 35, 36, 37, 38, 39] @=> int GRANULATOR_KEYS[];
 
-    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"] @=> string SOUND_KEYS_STR[];
-    [20, 26, 8, 21, 23, 28, 24, 12, 18, 19] @=> int SOUND_KEYS[];
+    // future use:  "H", "J", "K", "L" = 11, 13, 14, 15
+    
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G"] @=> string SOUND_KEYS_STR[];
+    [20, 26, 8, 21, 23, 28, 24, 12, 18, 19, 4, 22, 7, 9, 10] @=> int SOUND_KEYS[];
 
-    [0, 1, 0, 0, 0, 0, 0, 1, 0] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
-    
-    
+    [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
 }
