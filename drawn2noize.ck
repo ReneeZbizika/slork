@@ -349,6 +349,13 @@ fun void main()
                         <<< "granulator", i, "toggled" >>>;
                     }
                 }
+
+                if (msg.which == c.GLITCH_KEY) {
+                    ipad.glitch_and_turn_off();
+                }
+                else if (msg.which == c.FIX_GLITCH_KEY) {
+                    ipad.fix_glitch();
+                }
             }
         }
     }
