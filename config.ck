@@ -3,7 +3,7 @@ public class Config
     // ========================= Device configuration =========================
 
     // Device numbers
-    1 => int KEYBOARD_DEVICE;
+    0 => int KEYBOARD_DEVICE;
     1 => int WEBCAM_DEVICE;
 
     // OSC port
