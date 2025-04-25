@@ -21,7 +21,7 @@ public class Config
 
     // Audio files
     15 => int NUM_GRANULATORS;
-    15 => int NUM_SOUNDS;
+    17 => int NUM_SOUNDS;
 
     [
         "ocean_short.wav",      // 1
@@ -60,6 +60,11 @@ public class Config
         "rain.wav",                // D
         "scream.wav",              // F
         "parachute.wav",           // G
+
+        "chaos_music.wav",         // M
+        "glitch_music.wav",        // N
+
+
     ] @=> string SOUND_WAVS[];
 
 
@@ -89,10 +94,10 @@ public class Config
 
     // future use:  "H", "J", "K", "L" = 11, 13, 14, 15
     
-    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G"] @=> string SOUND_KEYS_STR[];
-    [20, 26, 8, 21, 23, 28, 24, 12, 18, 19, 4, 22, 7, 9, 10] @=> int SOUND_KEYS[];
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "M", "N"] @=> string SOUND_KEYS_STR[];
+    [20, 26, 8, 21, 23, 28, 24, 12, 18, 19, 4, 22, 7, 9, 10, 16, 17] @=> int SOUND_KEYS[];
 
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
+    [0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
 
 
     79 => int GLITCH_KEY;
