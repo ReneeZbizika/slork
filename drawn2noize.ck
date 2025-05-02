@@ -4,6 +4,9 @@ Config c;
 @import "ipad.ck";
 iPad ipad --> GG.scene();
 
+@import "GSlideshow.ck";
+GSlideshow slideshow --> GG.scene();
+
 // ======================== Granular Synthesis ========================
 class Granulator
 {
@@ -19,12 +22,10 @@ class Granulator
     float muted;
     1.0 => float grain_play_rate;       // current playback rate for grains (can be modified by height of cursor)
     
-    fun Granulator(int sound_index)
+    fun Granulator()
     {
-        sound_index => this.sound_index;
-
         // set the sample for the LiSa (use one LiSa per sound)
-        setSample("samples/" + c.GRANULATOR_WAVS[sound_index]);
+        setSound(0);
         
         0.05 => this.reverb.mix;     // reverb mix
         0.99 => this.blocker.blockZero; // pole location to block DC and ultra low frequencies
@@ -32,11 +33,10 @@ class Granulator
         this.lisa.chan(0) => this.blocker => this.reverb => this.master_gain => dac;
 
         spork ~ this.granulate();
-        spork ~ this.ipad_listener();
-        // spork ~ this.mouse_listener();
+        // spork ~ this.ipad_listener();
+        spork ~ this.mouse_listener();
 
         this.mute();
-        this.toggle();
     }
 
     fun void toggle()
@@ -55,8 +55,10 @@ class Granulator
         }
     }
 
-    fun void setSample(string filename)
+    // takes a sound index and sets the sample for the LiSa
+    fun void setSound(int index)
     {
+        "samples/" + c.GRANULATOR_WAVS[index] => string filename;
         SndBuf buf;
         buf.read(filename);
 
@@ -192,16 +194,13 @@ class Granulator
             else
                 Math.remap(ipad.pencil.y, 500, 0, 2.0, 3.0) => grain_play_rate;
 
-            // <<< "grain position:", c.GRAIN_POSITION >>>;
-            // <<< "grain play rate:", grain_play_rate >>>;
-
-            // Set volume from pressure
-            // <<< "pressure:", listener.pressure >>>;
-
+            // if we are currently playing (i.e. the pressure has changed)
             if (ipad.pencil.pressure != prev_pressure) {
                 0 => same_pressure_count;
 
-                if (!we_are_currently_playing) {
+                update_sound_parameters(ipad.pencil.pressure);      // then update the sound
+
+                if (!we_are_currently_playing) {        // unmute the sound if its not already playing
                     // <<< "pressure being applied" >>>;
                     spork ~ this.unmute(100::ms);
                     true => we_are_currently_playing;
@@ -209,8 +208,9 @@ class Granulator
             }
             else same_pressure_count++;
 
-
-            if (same_pressure_count > 4 && we_are_currently_playing)        // if the pencil pressure is the same for 4 consecutive frames, assume we lifted the pencil and mute the sound
+            // if the pencil pressure is the same for 4 consecutive frames, 
+            // assume we lifted the pencil and mute the sound
+            if (same_pressure_count > 4 && we_are_currently_playing)
             {
                 // <<< "pressure removed" >>>;
                 spork ~ this.mute(300::ms);
@@ -221,6 +221,11 @@ class Granulator
             
             GG.nextFrame() => now; // loop every 10ms
         }
+    }
+
+    fun void update_sound_parameters(float pressure) {
+        // update the sound parameters based on the pressure
+       pressure / 1.5 => this.lisa.gain;
     }
 
 }
@@ -244,6 +249,14 @@ class SoundPlayer
         0 => g.gain;
         buf.read("samples/" + c.SOUND_WAVS[sound_index]);
         c.LOOPS[sound_index] => buf.loop;
+    }
+
+    fun SoundPlayer(string filename, int loops)
+    {
+        buf => g => dac;
+        0 => g.gain;
+        buf.read(filename);
+        loops => buf.loop;
     }
 
     fun void toggle()
@@ -272,6 +285,21 @@ class SoundPlayer
             false => sound_playing;
         }
     }
+
+    fun void fade_out(dur du) {
+        Envelope env => blackhole;
+        env.duration(du);
+        env.value(1);
+        env.target(0);
+        while (env.value() > 0)
+        {
+            env.value() => g.gain;
+            1::ms => now;
+            <<< "fade out gain()", g.gain() >>>;
+        }
+
+        
+    }
 }
 
 
@@ -286,39 +314,22 @@ for (0 => int i; i < c.NUM_SOUNDS; i++) {
     players << sp;
 }
 
-// Set up the granular players
-Granulator granulators[0];
-for (0 => int i; i < c.NUM_GRANULATORS; i++) {
-    Granulator gran(i);
-    granulators << gran;
-}
+SoundPlayer intro_music("samples/intro_music.wav", false);
+SoundPlayer night_music("samples/night_music.wav", true);
+SoundPlayer chaos_music("samples/chaos_music.wav", true);
+SoundPlayer glitch_music("samples/glitch_music.wav", true);
+SoundPlayer friendship_music("samples/friendship_music.wav", false);
+SoundPlayer fin_music("samples/fin_music.wav", false);
 
+// Set up the granular player
+Granulator granulator;
+
+// Set up the next slide event
+Event next_slide;
 
 // ----------------- Functions -----------------
 
-// fun void print_state(int changed_index)
-// {
-//     string print_string;
-//     for (0 => int i; i < c.WAVS.size(); i++) {
-//         if (i % 4 == 0) "\n" +=> print_string;
-//         if (i == changed_index) "[" +=> print_string;
-//         else " " +=> print_string;
-
-//         "(" + c.KEYS[i] + ") " + c.WAVS[i] + " on mode " + players[i].mode +=> print_string;
-
-//         if (i == changed_index) "]" +=> print_string;
-//         else " " +=> print_string;
-
-//         "   " +=> print_string;
-
-//         <<< "master gain:", players[i].gran.master_gain.gain() >>>;
-        
-//     }
-//     <<< print_string, "" >>>;
-// }
-
-
-fun void main()
+fun void keyboard_listener()
 {
     Hid kb;
     HidMsg msg;
@@ -345,21 +356,108 @@ fun void main()
                 {
                     if (msg.which == c.GRANULATOR_KEYS[i])
                     {
-                        granulators[i].toggle();
-                        <<< "granulator", i, "toggled" >>>;
+                        granulator.setSound(i);
                     }
                 }
 
                 if (msg.which == c.GLITCH_KEY) {
-                    ipad.glitch_and_turn_off();
-                }
-                else if (msg.which == c.FIX_GLITCH_KEY) {
-                    ipad.fix_glitch();
+                    next_slide.signal();
                 }
             }
         }
     }
 }
 
-main();
+spork ~ keyboard_listener();
+
+
+fun intro()
+{
+    slideshow.jump_to_slide(5);
+    next_slide => now;
+
+    <<< "showing roar video" >>>;
+    slideshow.roar_video.rate(1);
+    intro_music.toggle();
+    slideshow.jump_to_slide_with_fade(1, 0.1::second, 2::second);
+    3::second => now;
+
+    <<< "showing title screen" >>>;
+    slideshow.jump_to_slide_with_fade(2, 2::second, 2::second);
+    5::second => now;
+    slideshow.jump_to_slide_with_fade(5, 3::second, 0.1::second);     // fade to black
+}
+
+// renee draws in the dark, then we fade into the drawings
+fun void act_1()
+{
+    next_slide => now;
+
+    <<< "playing night music + fading in ipad" >>>;
+    night_music.toggle();
+    slideshow.jump_to_slide_with_fade(3, 0.2::second, 10::second);
+}
+
+// keshav and renee fight over the drawings
+fun void act_2()
+{
+    next_slide => now;
+    spork ~ night_music.fade_out(3.5::second);     // fade out the night background music
+    chaos_music.toggle();
+}
+
+// ipad glitches out
+fun void act_3()
+{
+    next_slide => now;
+    slideshow.jump_to_slide(4);
+    slideshow.glitching_video.rate(1);
+
+    glitch_music.toggle();
+    chaos_music.buf.pos() => glitch_music.buf.pos;  // glitch music starts at the same position as chaos music
+    chaos_music.toggle();
+}
+
+// drawing is lost, then kehsav draws a new drawing for renee
+fun void act_4()
+{
+    next_slide => now;
+
+    slideshow.jump_to_slide(3);
+    spork ~ slideshow.popup(6::second);
+
+    chaos_music.toggle();
+    glitch_music.buf.pos() => chaos_music.buf.pos;
+    glitch_music.toggle();
+    chaos_music.fade_out(3::second);
+    friendship_music.toggle();
+}
+
+fun void fin()
+{   
+    next_slide => now;
+    spork ~ friendship_music.fade_out(2::second);
+    fin_music.toggle();
+    
+    4::second => now;
+    slideshow.fin_video.rate(0.5);
+    slideshow.jump_to_slide_with_fade(5, 2::second, 2::second);
+    
+
+    next_slide => now;
+}
+
+GG.scene().light().intensity(0.7);
+GG.scene().ambient(@(0.7, 0.7, 0.7));
+intro();
+act_1();
+act_2();
+act_3();
+act_4();
+fin();
+
+
+
+
+
 

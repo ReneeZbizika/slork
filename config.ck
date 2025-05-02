@@ -4,7 +4,7 @@ public class Config
 
     // Device numbers
     1 => int KEYBOARD_DEVICE;
-    1 => int WEBCAM_DEVICE;
+    0 => int WEBCAM_DEVICE;
 
     // OSC port
     9000 => int OSC_PORT;
@@ -12,16 +12,16 @@ public class Config
     // Window size
     1280 => float WINDOW_WIDTH_CONSTANT;
     960 => float WINDOW_HEIGHT_CONSTANT;
-    8.71 * 1.15 => float SLIDE_WIDTH;
-    4.9 * 1.15 => float SLIDE_HEIGHT;
-
+    0.8 => float SLIDE_SCALE;
+    8.71 * SLIDE_SCALE => float SLIDE_WIDTH;
+    4.9 * SLIDE_SCALE => float SLIDE_HEIGHT;
 
 
     // ========================= Audio configuration =========================
 
     // Audio files
     15 => int NUM_GRANULATORS;
-    17 => int NUM_SOUNDS;
+    15 => int NUM_SOUNDS;
 
     [
         "ocean_short.wav",      // 1
@@ -44,8 +44,8 @@ public class Config
 
 
     [
-        "unknown.wav",             // 
-        "night_background.wav",    // W
+        "unknown.wav",             //
+        "unknown.wav",             //
         "unknown.wav",             // 
         "seagull_0.wav",           // R
         "sparkle_2.wav",           // T
@@ -60,10 +60,6 @@ public class Config
         "rain.wav",                // D
         "scream.wav",              // F
         "parachute.wav",           // G
-
-        "chaos_music.wav",         // M
-        "glitch_music.wav",        // N
-
 
     ] @=> string SOUND_WAVS[];
 
@@ -97,7 +93,7 @@ public class Config
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "M", "N"] @=> string SOUND_KEYS_STR[];
     [20, 26, 8, 21, 23, 28, 24, 12, 18, 19, 4, 22, 7, 9, 10, 16, 17] @=> int SOUND_KEYS[];
 
-    [0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
+    [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] @=> int LOOPS[];           // 1 if the sound should play on loop, 0 if it should not
 
 
     79 => int GLITCH_KEY;
