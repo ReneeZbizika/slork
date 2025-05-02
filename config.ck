@@ -4,7 +4,7 @@ public class Config
 
     // Device numbers
     1 => int KEYBOARD_DEVICE;
-    0 => int WEBCAM_DEVICE;
+    1 => int WEBCAM_DEVICE;
 
     // OSC port
     9000 => int OSC_PORT;

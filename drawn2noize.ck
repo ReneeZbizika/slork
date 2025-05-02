@@ -33,8 +33,8 @@ class Granulator
         this.lisa.chan(0) => this.blocker => this.reverb => this.master_gain => dac;
 
         spork ~ this.granulate();
-        // spork ~ this.ipad_listener();
-        spork ~ this.mouse_listener();
+        spork ~ this.ipad_listener();
+        // spork ~ this.mouse_listener();
 
         this.mute();
     }
