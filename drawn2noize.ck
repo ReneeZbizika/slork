@@ -26,6 +26,7 @@ class Granulator
     {
         // set the sample for the LiSa (use one LiSa per sound)
         setSound(0);
+        // 0 => master_gain.gain;
         
         0.05 => this.reverb.mix;     // reverb mix
         0.99 => this.blocker.blockZero; // pole location to block DC and ultra low frequencies
@@ -37,6 +38,7 @@ class Granulator
         // spork ~ this.mouse_listener();
 
         this.mute();
+        
     }
 
     fun void toggle()
@@ -58,6 +60,7 @@ class Granulator
     // takes a sound index and sets the sample for the LiSa
     fun void setSound(int index)
     {
+        // 1 => this.master_gain.gain;
         "samples/" + c.GRANULATOR_WAVS[index] => string filename;
         SndBuf buf;
         buf.read(filename);
@@ -185,6 +188,12 @@ class Granulator
         int we_are_currently_playing;
 
         while (true) {
+
+            <<< "we_are_currently_playing", we_are_currently_playing >>>;
+            <<< "grain position", c.GRAIN_POSITION >>>;
+            <<< "grain play rate", grain_play_rate >>>;
+
+
             // Set grain playback position from X
             Math.remap(ipad.pencil.x, 0, 1360, 0.0, 1.0) => c.GRAIN_POSITION;
 
@@ -210,7 +219,7 @@ class Granulator
 
             // if the pencil pressure is the same for 4 consecutive frames, 
             // assume we lifted the pencil and mute the sound
-            if (same_pressure_count > 4 && we_are_currently_playing)
+            if (same_pressure_count > 8 && we_are_currently_playing)
             {
                 // <<< "pressure removed" >>>;
                 spork ~ this.mute(300::ms);
