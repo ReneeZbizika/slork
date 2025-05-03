@@ -4,6 +4,8 @@ Config c;
 @import "ipad.ck";
 iPad ipad --> GG.scene();
 
+GG.fullscreen();
+
 @import "GSlideshow.ck";
 GSlideshow slideshow --> GG.scene();
 
@@ -207,7 +209,7 @@ class Granulator
             if (ipad.pencil.pressure != prev_pressure) {
                 0 => same_pressure_count;
 
-                update_sound_parameters(ipad.pencil.pressure);      // then update the sound
+                // update_sound_parameters(ipad.pencil.pressure);      // then update the sound
 
                 if (!we_are_currently_playing) {        // unmute the sound if its not already playing
                     // <<< "pressure being applied" >>>;
