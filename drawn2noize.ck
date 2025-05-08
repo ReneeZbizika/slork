@@ -350,7 +350,7 @@ SoundPlayer intro_music("samples/intro_music.wav", false);
 SoundPlayer night_music("samples/night_music.wav", true);
 SoundPlayer chaos_music("samples/chaos_music.wav", true);
 SoundPlayer glitch_music("samples/glitch_music.wav", true);
-SoundPlayer friendship_music("samples/friendship_music.wav", false);
+SoundPlayer friendship_music("samples/friendship_music.wav", true);
 SoundPlayer fin_music("samples/fin_music.wav", false);
 
 // Set up the granular player
@@ -455,7 +455,7 @@ fun void act_3()
 fun void act_4()
 {
     next_slide => now;
-    granulator.setSound(1);
+    granulator.setSound(1);     // auto switch to a nicer drawing sound (in case I forget)
     granulator.toggle();    // unmute the granulator for drawing
     slideshow.jump_to_slide(3);
     spork ~ slideshow.popup(6::second);
