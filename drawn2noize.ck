@@ -5,7 +5,7 @@ Config c;
 iPad ipad --> GG.scene();
 
 GG.fullscreen();
-GWindow.mouseMode(GWindow.MouseMode_Disabled);
+// GWindow.mouseMode(GWindow.MouseMode_Disabled);
 
 @import "GSlideshow.ck";
 GSlideshow slideshow --> GG.scene();
@@ -15,6 +15,7 @@ class Granulator
 {
     int sound_index;
 
+    LiSa lisas[c.NUM_GRANULATORS];
     LiSa lisa;
     PoleZero blocker;
     NRev reverb;
@@ -28,6 +29,7 @@ class Granulator
     fun Granulator()
     {
         // set the sample for the LiSa (use one LiSa per sound)
+        setupLisas();
         setSound(0);
         // 0 => master_gain.gain;
         
@@ -44,6 +46,33 @@ class Granulator
         
     }
 
+    fun void setupLisas()
+    {
+        for (0 => int i; i < c.NUM_GRANULATORS; i++)
+        {
+            // 1 => this.master_gain.gain;
+            "samples/" + c.GRANULATOR_WAVS[i] => string filename;
+            SndBuf buf;
+            buf.read(filename);
+
+            LiSa new_lisa;
+
+            buf.samples()::samp => new_lisa.duration;
+
+            for (int j; j < buf.samples(); j++)
+            {
+                new_lisa.valueAt(buf.valueAt(j * buf.channels()), j::samp);
+            }
+
+            new_lisa.play(false);
+            new_lisa.loop(false);
+            new_lisa.maxVoices(c.LISA_MAX_VOICES);
+            new_lisa.gain(0.0);
+
+            new_lisa @=> lisas[i];
+        }
+    }
+
     fun void toggle()
     {
         !(this.master_gain.gain() $ int) => this.master_gain.gain;
@@ -53,6 +82,7 @@ class Granulator
 
     fun void granulate() {
         while( true ) {
+            <<< "granulator gain:", this.lisa.gain() >>>;
             // fire a grain
             fireGrain();
             // amount here naturally controls amount of overlap between grains
@@ -63,21 +93,11 @@ class Granulator
     // takes a sound index and sets the sample for the LiSa
     fun void setSound(int index)
     {
-        // 1 => this.master_gain.gain;
-        "samples/" + c.GRANULATOR_WAVS[index] => string filename;
-        SndBuf buf;
-        buf.read(filename);
-
-        buf.samples()::samp => this.lisa.duration;
-
-        for (int i; i < buf.samples(); i++)
-        {
-            this.lisa.valueAt(buf.valueAt(i * buf.channels()), i::samp);
-        }
-
-        this.lisa.play(false);
-        this.lisa.loop(false);
-        this.lisa.maxVoices(c.LISA_MAX_VOICES);
+        mute();
+        this.lisa =< this.blocker;
+        lisas[index] @=> this.lisa;
+        this.lisa => this.blocker;
+        // unmute();
     }
 
     fun void mute() {
@@ -93,7 +113,7 @@ class Granulator
         this.lisa.gain() => saved_gain;
         now + du => time later;
         while (now < later) {
-            ((later - now) / du) => this.lisa.gain;
+            saved_gain * ((later - now) / du) => this.lisa.gain;
             1::ms => now;
         }
     }
@@ -435,6 +455,7 @@ fun void act_3()
 fun void act_4()
 {
     next_slide => now;
+    granulator.setSound(1);
     granulator.toggle();    // unmute the granulator for drawing
     slideshow.jump_to_slide(3);
     spork ~ slideshow.popup(6::second);
@@ -464,8 +485,8 @@ fun void fin()
 
 GG.scene().light().intensity(0.7);
 GG.scene().ambient(@(0.7, 0.7, 0.7));
-// intro();
-// act_1();
+intro();
+act_1();
 act_2();
 act_3();
 act_4();
