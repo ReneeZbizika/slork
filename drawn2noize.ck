@@ -5,6 +5,7 @@ Config c;
 iPad ipad --> GG.scene();
 
 GG.fullscreen();
+GWindow.mouseMode(GWindow.MouseMode_Disabled);
 
 @import "GSlideshow.ck";
 GSlideshow slideshow --> GG.scene();
@@ -421,6 +422,7 @@ fun void act_2()
 fun void act_3()
 {
     next_slide => now;
+    granulator.toggle();    // mute the granulator for erasing
     slideshow.jump_to_slide(4);
     slideshow.glitching_video.rate(1);
 
@@ -433,7 +435,7 @@ fun void act_3()
 fun void act_4()
 {
     next_slide => now;
-
+    granulator.toggle();    // unmute the granulator for drawing
     slideshow.jump_to_slide(3);
     spork ~ slideshow.popup(6::second);
 
@@ -447,12 +449,14 @@ fun void act_4()
 fun void fin()
 {   
     next_slide => now;
+    spork ~ slideshow.add_picture_frame(6::second);
     spork ~ friendship_music.fade_out(2::second);
     fin_music.toggle();
     
     4::second => now;
+    
+    slideshow.jump_to_slide_with_fade(5, 2::second, 0.3::second);
     slideshow.fin_video.rate(0.5);
-    slideshow.jump_to_slide_with_fade(5, 2::second, 2::second);
     
 
     next_slide => now;
@@ -460,8 +464,8 @@ fun void fin()
 
 GG.scene().light().intensity(0.7);
 GG.scene().ambient(@(0.7, 0.7, 0.7));
-intro();
-act_1();
+// intro();
+// act_1();
 act_2();
 act_3();
 act_4();

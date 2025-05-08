@@ -90,7 +90,7 @@ public class GSlideshow extends GGen
         if (slide_idx == 0) plane.sca(@(slide_width, -slide_height, 1));
         if (slide_idx == 1) plane.sca(@(slide_width, -slide_height, 1));
         if (slide_idx == 2) plane.sca(@(webcam.aspect() * slide_height, -slide_height, 1));
-        if (slide_idx == 3) plane.sca(@(webcam.aspect() * slide_height, slide_height, 1));
+        if (slide_idx == 3) plane.sca(@(-webcam.aspect() * slide_height, slide_height, 1));
         if (slide_idx == 4) plane.sca(@(webcam.aspect() * slide_height, slide_height, 1));
         if (slide_idx == 5) plane.sca(@(slide_width, -slide_height, 1));
     }
@@ -108,7 +108,46 @@ public class GSlideshow extends GGen
 
         popup_duration => now;
         popup --< this;
+    }
 
+    fun void add_picture_frame(dur popup_duration)
+    {
+        FlatMaterial popup_mat;
+        popup_mat.scale(@(1, -1));  // flip across the y-axis
+        Texture.load(me.dir() + "assets/frame.png") @=> Texture popup_texture;
+        popup_mat.colorMap(popup_texture);
+        PlaneGeometry popup_geo;
+        GMesh popup(popup_geo, popup_mat) --> this;
+        popup.translateZ(2);
+        popup.scaX(slide_width * 0.6);
+        popup.scaY(slide_height * 0.7);
+
+        popup.posY(slide_height);
+
+        Envelope env => blackhole;
+        env.duration(popup_duration / 2);
+        env.value(slide_height);
+        env.target(0);
+
+        while (env.value() != env.target())
+        {
+            popup.posY(env.value());
+            10::ms => now;
+        }
+
+        Envelope cam_env => blackhole;
+        cam_env.duration(popup_duration / 2);
+        <<< GG.scene().camera().posZ() >>>;
+        cam_env.value(5);
+        cam_env.target(3);
+
+        while (cam_env.value() != cam_env.target())
+        {
+            GG.nextFrame() => now;
+            GG.scene().camera().posZ(cam_env.value());
+        }
+        popup --< this;
+        GG.scene().camera().posZ(5);
     }
 
     fun void update(float dt)

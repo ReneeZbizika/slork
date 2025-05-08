@@ -3,7 +3,7 @@ public class Config
     // ========================= Device configuration =========================
 
     // Device numbers
-    0 => int KEYBOARD_DEVICE;
+    1 => int KEYBOARD_DEVICE;
     1 => int WEBCAM_DEVICE;
 
     // OSC port
@@ -81,7 +81,6 @@ public class Config
     3.0 => float GRAIN_FIRE_RANDOM; // grain jitter (0 == periodic fire rate)
 
     30 => int LISA_MAX_VOICES;
-
 
     // ========================= Keyboard configuration =========================
 
